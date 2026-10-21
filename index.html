@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bash Guide</title>
+<meta name="description" content="In-depth Bash scripting guide from beginner to advanced with projects, exercises, and runnable scripts.">
+<style>
+:root{--bg:#f4f1ea;--bg2:#fffdf8;--text:#1c1914;--muted:#6b6458;--border:#e0d8c8;--accent:#b45309;--accent2:#0f766e;--soft:#f3e7d3;--side:#1a1510;--side-t:#f5efe6;--side-m:#a89a86;--side-a:#fbbf24;--code:#1c1917;--code-t:#faf6f1;--out:#292524;--out-t:#d6d3d1;--kw:#fbbf24;--str:#86efac;--var:#7dd3fc;--cmt:#a8a29e;--tip:#065f46;--tipbg:#ecfdf5;--warn:#9a3412;--warnbg:#fff7ed;--note:#1e40af;--notebg:#eff6ff;--bad:#b91c1c;--good:#15803d;--shadow:0 12px 32px rgba(28,25,20,.08);--max:820px;--sidew:310px;--sans:"Segoe UI",system-ui,sans-serif;--serif:Georgia,"Iowan Old Style",serif;--mono:ui-monospace,"Cascadia Code",Consolas,monospace}
+[data-theme=dark]{--bg:#120f0c;--bg2:#1c1712;--text:#f5efe6;--muted:#b0a594;--border:#3f3428;--accent:#fbbf24;--accent2:#2dd4bf;--soft:#2a2118;--side:#0c0a08;--side-t:#f5efe6;--side-m:#9c8d78;--side-a:#fbbf24;--code:#0c0a09;--code-t:#faf6f1;--out:#1c1917;--out-t:#a8a29e;--tip:#6ee7b7;--tipbg:#052e24;--warn:#fdba74;--warnbg:#2a1608;--note:#93c5fd;--notebg:#0b1a33;--shadow:0 14px 36px rgba(0,0,0,.45)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;font-family:var(--serif);background:radial-gradient(900px 400px at 0% -10%,color-mix(in srgb,var(--accent) 14%,transparent),transparent),var(--bg);color:var(--text);line-height:1.7;font-size:17.5px}
+h1,h2,h3,h4,.brand,.btn,.pill,.ex summary,.level-tag,.quiz h4,.bg h4,.check h4{font-family:var(--sans)}
+code,pre,kbd,.mono,.copy-btn,.search input,.toc a,th,td,.quiz button{font-family:var(--mono)}
+a{color:var(--accent)}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:#111;padding:.5rem 1rem;z-index:100}.skip:focus{left:0}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:color-mix(in srgb,var(--bg2) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.brand{font-weight:750;text-decoration:none;color:var(--text);font-size:.92rem}
+.burger{display:none;border:1px solid var(--border);background:var(--bg2);color:var(--text);border-radius:10px;width:42px;height:42px;font-size:1.15rem;cursor:pointer}
+.search{position:relative;flex:1;max-width:380px;margin-left:auto}
+.search input{width:100%;padding:.6rem .8rem;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:.85rem}
+.search-results{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;max-height:55vh;overflow:auto;box-shadow:var(--shadow);z-index:50}
+.search-results.show{display:block}
+.search-results a{display:block;padding:.65rem .85rem;text-decoration:none;color:var(--text);border-bottom:1px solid var(--border);font-size:.78rem}
+.search-results a:hover{background:var(--soft)}
+.btn{border:1px solid var(--border);background:var(--bg2);color:var(--text);border-radius:10px;padding:.5rem .75rem;cursor:pointer;font-size:.8rem}
+.layout{display:grid;grid-template-columns:var(--sidew) 1fr;min-height:calc(100vh - 58px)}
+.sidebar{position:sticky;top:58px;height:calc(100vh - 58px);overflow:auto;background:var(--side);color:var(--side-t);padding:1rem .75rem 2rem;border-right:1px solid var(--border)}
+.sidebar h2,.level-label{margin:.85rem 0 .35rem;font-size:.66rem;text-transform:uppercase;letter-spacing:.14em;color:var(--side-m)}
+.progress-box{margin:0 0 .9rem;padding:.75rem;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:.76rem}
+.progress-box .bar{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:.4rem}
+.progress-box .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .35s}
+.toc{list-style:none;margin:0;padding:0}
+.toc a{display:block;color:var(--side-m);text-decoration:none;padding:.38rem .5rem;border-radius:8px;font-size:.74rem;line-height:1.35}
+.toc a:hover{color:var(--side-t);background:rgba(255,255,255,.05)}
+.toc a.active{color:#1c1914;background:var(--side-a);font-weight:700}
+.content-wrap{padding:1.35rem 1.1rem 4rem}
+main{max-width:var(--max);margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2rem 1.5rem 3rem;box-shadow:var(--shadow)}
+h1{font-size:clamp(1.8rem,3vw,2.4rem);margin:0 0 .5rem;letter-spacing:-.02em}
+h2{font-size:1.4rem;margin:2.2rem 0 .65rem;padding-top:.5rem;border-top:1px solid var(--border)}
+h2:first-of-type{border-top:0;margin-top:1.1rem}
+h3{font-size:1.08rem;margin:1.35rem 0 .4rem}
+p{margin:.65rem 0}ul,ol{padding-left:1.2rem}li{margin:.3rem 0}
+.lead{color:var(--muted);font-size:1.02rem}
+.hero{border-radius:18px;padding:1.4rem 1.2rem;margin-bottom:1rem;background:radial-gradient(700px 220px at 0% 0%,color-mix(in srgb,var(--accent) 20%,transparent),transparent),var(--soft);border:1px solid var(--border)}
+.eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700;margin:0 0 .4rem;font-family:var(--sans)}
+.pillrow{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.85rem}
+.pill{font-size:.76rem;font-weight:650;padding:.25rem .6rem;border-radius:999px;border:1px solid var(--border);background:var(--bg2)}
+.level-banner{margin:2rem 0 0;padding:1rem 1.1rem;border-radius:14px;border:1px dashed color-mix(in srgb,var(--accent) 45%,var(--border));background:color-mix(in srgb,var(--accent) 10%,var(--bg2))}
+.level-tag{display:inline-block;font-size:.68rem;font-weight:750;letter-spacing:.08em;text-transform:uppercase;padding:.15rem .45rem;border-radius:999px;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);margin-left:.35rem;vertical-align:middle}
+.posix{font-size:.78rem;border:1px solid var(--border);border-radius:8px;padding:.2rem .45rem;background:var(--soft);font-family:var(--sans)}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.84rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--border);padding:.48rem .55rem;text-align:left;vertical-align:top}th{background:var(--soft)}
+.prewrap{position:relative;margin:1rem 0}
+pre.code{margin:0;padding:1rem;overflow-x:auto;background:var(--code);color:var(--code-t);border-radius:14px;border:1px solid var(--border);font-size:.82rem;line-height:1.55;white-space:pre}
+pre.out{margin:0;padding:1rem;overflow-x:auto;background:var(--out);color:var(--out-t);border-radius:14px;border:1px dashed var(--border);font-size:.82rem;line-height:1.55;white-space:pre}
+.tok-kw{color:var(--kw)}.tok-str{color:var(--str)}.tok-var{color:var(--var)}.tok-cmt{color:var(--cmt);font-style:italic}
+.copy-btn{position:absolute;top:.5rem;right:.5rem;background:#44403c;color:#fff;border:1px solid #57534e;border-radius:8px;padding:.2rem .5rem;font-size:.68rem;cursor:pointer;z-index:2}
+.callout{border-radius:12px;padding:.8rem 1rem;margin:1rem 0;border:1px solid var(--border)}
+.callout.tip{background:var(--tipbg);color:var(--tip)}.callout.warn{background:var(--warnbg);color:var(--warn)}.callout.note{background:var(--notebg);color:var(--note)}
+.callout p{margin:.3rem 0 0;color:var(--text)}
+.bg{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0}
+.bg>div{border:1px solid var(--border);border-radius:12px;padding:.75rem;background:var(--bg)}
+.bg h4{margin:0 0 .45rem;font-size:.88rem}
+.bg .bad{border-color:color-mix(in srgb,var(--bad) 45%,var(--border))}
+.bg .good{border-color:color-mix(in srgb,var(--good) 45%,var(--border))}
+@media(max-width:720px){.bg{grid-template-columns:1fr}}
+.ex{margin:1rem 0;border:1px solid var(--border);border-radius:14px;background:var(--bg);overflow:hidden}
+.ex summary{cursor:pointer;padding:.8rem 1rem;font-weight:650;list-style:none}
+.ex summary::-webkit-details-marker{display:none}
+.ex summary::before{content:"▸ ";color:var(--accent)}.ex[open] summary::before{content:"▾ "}
+.ex .body{padding:0 1rem 1rem}
+.quiz{margin:1.1rem 0;padding:1rem;border-radius:14px;border:1px solid var(--border);background:var(--bg)}
+.quiz .q{margin:.7rem 0 .35rem;font-weight:650;font-family:var(--sans);font-size:.95rem}
+.quiz button{display:block;width:100%;text-align:left;margin:.28rem 0;padding:.5rem .65rem;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;font-size:.8rem}
+.quiz button.correct{border-color:var(--good);background:color-mix(in srgb,var(--good) 16%,var(--bg2))}
+.quiz button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--bg2))}
+.quiz .feedback{min-height:1.1em;margin-top:.35rem;font-size:.84rem;color:var(--muted)}
+.check{margin:1rem 0;padding:.8rem 1rem;border:1px solid var(--border);border-radius:14px;background:var(--bg)}
+.check label{display:flex;gap:.5rem;margin:.3rem 0;font-size:.84rem;cursor:pointer;font-family:var(--mono)}
+.diagram{margin:1rem 0;padding:1rem;border-radius:14px;border:1px solid var(--border);background:linear-gradient(180deg,var(--soft),var(--bg2));font-family:var(--mono);font-size:.8rem;white-space:pre;overflow-x:auto}
+footer{margin-top:2.3rem;padding-top:1rem;border-top:1px solid var(--border);color:var(--muted);font-size:.88rem}
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30}
+@media(max-width:920px){.burger{display:inline-flex;align-items:center;justify-content:center}.layout{grid-template-columns:1fr}.sidebar{position:fixed;left:0;top:58px;bottom:0;width:min(90vw,340px);transform:translateX(-105%);transition:transform .25s;z-index:35}.sidebar.open{transform:translateX(0)}.backdrop.show{display:block}}
+@media print{.topbar,.sidebar,.backdrop,.copy-btn,.search,#themeToggle,.progress-box{display:none!important}.layout{display:block}main{box-shadow:none;border:0}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="burger" id="burger" aria-label="Open contents" aria-expanded="false">☰</button>
+  <a class="brand" href="#top">Bash Guide</a>
+  <div class="search">
+    <label for="q" style="position:absolute;left:-9999px">Search</label>
+    <input id="q" type="search" placeholder="Search bash topics…" autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <button class="btn" id="themeToggle" type="button">Theme</button>
+</header>
+<div class="backdrop" id="backdrop" hidden></div>
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Contents">
+  <div class="progress-box">
+    <div>Progress: <strong id="progText">0%</strong></div>
+    <div class="bar"><i id="progBar"></i></div>
+    <div style="margin-top:.4rem;color:var(--side-m)">Checkboxes &amp; quizzes save locally.</div>
+  </div>
+  <h2>Contents</h2>
+  <ol class="toc" id="toc"></ol>
+</nav>
+<div class="content-wrap">
+<main id="main">
+<div class="hero" id="top">
+  <p class="eyebrow">Bash 4+/5+ · Linux-first · Offline · GitHub Pages</p>
+  <h1>Bash Guide</h1>
+  <p class="lead">From your first <code>#!/usr/bin/env bash</code> to production-ready automation: quoting that clicks, safe loops, getopts, traps, flock, SSH, jq—and full projects you can run.</p>
+  <p class="meta">Live: <a href="https://krishant624.github.io/bash-guide/">krishant624.github.io/bash-guide</a> · Scripts: <code>scripts/</code></p>
+  <div class="pillrow">
+    <span class="pill">Bad vs Good</span>
+    <span class="pill">Exercises + quizzes</span>
+    <span class="pill">Real projects</span>
+    <span class="pill">shellcheck-minded</span>
+  </div>
+</div>
+<div class="callout warn"><strong>Warning</strong><p>Practice in a VM, WSL, or disposable directory. Project scripts may touch disks or SSH—read the header before running.</p></div>
+<div class="callout note"><strong>Note</strong><p>Target Bash 4.x/5.x on Linux. Features flagged when Bash-only or broken on macOS’s default Bash 3.2.</p></div>
+
+<section id="l1-script" data-level="Level 1 · Beginner" data-keywords="shebang chmod path executable">
+<h2>1. What a script is</h2>
+
+<p>A <strong>script</strong> is a text file of shell commands. The <strong>shebang</strong> line tells Linux which interpreter to use.</p>
+<figure class="diagram" aria-label="How a script runs">you type ./hi.sh
+   → kernel reads #!/usr/bin/env bash
+   → starts bash with hi.sh
+   → bash runs each line</figure>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="#!/usr/bin/env bash\n# hi.sh\nset -euo pipefail\nprintf 'Hello from %s\\n' &quot;$0&quot;"></pre></div>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="chmod u+x hi.sh\n./hi.sh\nbash hi.sh   # works even without +x"></pre></div>
+<div class="prewrap"><pre class="out">Hello from ./hi.sh</pre></div>
+<p>Put personal tools in <code>~/bin</code> and add it to <code>PATH</code> in <code>~/.bashrc</code>: <code>export PATH="$HOME/bin:$PATH"</code>.</p>
+<span class="posix">Bash-only tip: prefer <code>#!/usr/bin/env bash</code> over hard-coding <code>/bin/bash</code> when the path varies.</span>
+<div class="callout warn"><strong>Warning</strong><p>Practice in a disposable directory or VM. Never test destructive scripts on important data.</p></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Create <code>~/bin/hi.sh</code> with a shebang, make it executable, run it with <code>./</code>.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="mkdir -p &quot;$HOME/bin&quot;\ncat > &quot;$HOME/bin/hi.sh&quot; <<'EOF'\n#!/usr/bin/env bash\nset -euo pipefail\necho hi\nEOF\nchmod u+x &quot;$HOME/bin/hi.sh&quot;\n&quot;$HOME/bin/hi.sh&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Explain in one sentence the difference between <code>./script.sh</code> and <code>bash script.sh</code>.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# ./ uses shebang + needs +x\\n# bash script.sh forces bash and ignores +x"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Add <code>~/bin</code> to PATH for new shells.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="echo 'export PATH=&quot;$HOME/bin:$PATH&quot;' >> ~/.bashrc\nsource ~/.bashrc"></pre></div></details></div></details>
+<div class="check" data-check="l1-script"><h4>Section progress</h4><label><input type="checkbox"> I can create, chmod, and run a script</label></div>
+
+</section>
+<section id="l1-vars" data-level="Level 1 · Beginner" data-keywords="variables quoting command substitution arithmetic readonly">
+<h2>2. Variables</h2>
+
+<p><strong>Why quoting matters:</strong> spaces and globs split words. Single quotes are literal; double quotes expand <code>$vars</code> and <code>$(...)</code>.</p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="name=Ada\necho &quot;$name&quot;\necho 'literal $name'\nfiles=$(ls)\ncount=$((2 + 3))\nreadonly PI=3\n# PI=4  # would fail"></pre></div>
+<div class="bg"><div class="bad"><h4>Bad</h4><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="dir=My Docs\ncd $dir"></pre></div><p>Word-splits into My and Docs.</p></div><div class="good"><h4>Good</h4><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="dir=&quot;My Docs&quot;\ncd -- &quot;$dir&quot;"></pre></div><p>One argument; -- protects odd names.</p></div></div>
+<span class="posix">Arithmetic <code>$((( )))</code> and arrays differ in plain POSIX <code>sh</code>. macOS ships ancient Bash 3.2—avoid <code>${var,,}</code> there unless you install newer bash.</span>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Set <code>city</code> and print <code>City: …</code> with printf.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="city=Austin\nprintf 'City: %s\\n' &quot;$city&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Compute 12*8 with <code>$(( ))</code> and print it.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="printf '%s\\n' &quot;$((12 * 8))&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Show a Bad vs Good fix for an unquoted variable with spaces.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="f=&quot;a b.txt&quot;\nls -- &quot;$f&quot;"></pre></div></details></div></details>
+<div class="check" data-check="l1-vars"><h4>Section progress</h4><label><input type="checkbox"> I quote variables and can use $( ) and $(( ))</label></div>
+
+</section>
+<section id="l1-io" data-level="Level 1 · Beginner" data-keywords="echo printf read positional parameters argc">
+<h2>3. Input and output</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="printf 'Hello %s\\n' &quot;world&quot;\nread -r -p &quot;Name: &quot; name\nprintf 'Hi %s\\n' &quot;$name&quot;\n# silent read (passwords — still avoid putting secrets in scripts)\n# read -r -s -p &quot;Secret: &quot; secret; echo"></pre></div>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# save as args.sh\n#!/usr/bin/env bash\nset -euo pipefail\nprintf 'script=%s\\n' &quot;$0&quot;\nprintf 'argc=%s\\n' &quot;$#&quot;\nprintf 'first=%s\\n' &quot;${1-}&quot;\nprintf 'all:'; printf ' <%s>' &quot;$@&quot;; echo"></pre></div>
+<div class="prewrap"><pre class="out">$ bash args.sh a b
+script=args.sh
+argc=2
+first=a
+all: <a> <b></pre></div>
+<p>Use <code>"$@"</code> (not unquoted <code>$*</code>) to forward arguments safely.</p>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Write a script that prints how many args it received.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="#!/usr/bin/env bash\\nset -euo pipefail\\nprintf '%s\\n' &quot;$#&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Read a line into <code>line</code> and echo it quoted.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="read -r line\\nprintf '%s\\n' &quot;$line&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Demonstrate <code>$@</code> preserving spaces with two args containing spaces.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="bash args.sh &quot;a b&quot; &quot;c d&quot;"></pre></div></details></div></details>
+<div class="check" data-check="l1-io"><h4>Section progress</h4><label><input type="checkbox"> I understand $@, $#, and read/printf</label></div>
+
+</section>
+<section id="l1-if" data-level="Level 1 · Beginner" data-keywords="if test [[ case && ||">
+<h2>4. Conditionals</h2>
+
+<p>In Bash, prefer <code>[[ ... ]]</code> over legacy <code>[ ... ]</code> / <code>test</code> (safer, more features).</p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="f=${1:-/etc/hosts}\nif [[ -f $f && -r $f ]]; then\n  printf 'readable file: %s\\n' &quot;$f&quot;\nelif [[ -d $f ]]; then\n  printf 'directory: %s\\n' &quot;$f&quot;\nelse\n  printf 'missing: %s\\n' &quot;$f&quot; >&2\n  exit 1\nfi\n\ncase ${2:-start} in\n  start|on)  echo starting ;;\n  stop|off)  echo stopping ;;\n  *)         echo &quot;unknown: $2&quot; >&2; exit 2 ;;\nesac\n\n[[ -n ${name:-} ]] && echo &quot;name set&quot; || echo &quot;name empty&quot;"></pre></div>
+<div class="bg"><div class="bad"><h4>Bad</h4><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="if [ $x = yes ]; then echo ok; fi"></pre></div><p>Breaks if x is empty or has spaces.</p></div><div class="good"><h4>Good</h4><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="if [[ $x == yes ]]; then echo ok; fi"></pre></div><p>[[ ]] handles empty values better.</p></div></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Write an if that checks a path is a directory.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="d=${1:-$HOME}\\nif [[ -d $d ]]; then echo dir; else echo no; fi"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Use case to accept start/stop only.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="case $1 in start|stop) echo ok;; *) exit 2;; esac"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Chain: create a file only if it does not exist.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="f=/tmp/demo.$$\\n[[ -e $f ]] || touch -- &quot;$f&quot;"></pre></div></details></div></details>
+<div class="check" data-check="l1-if"><h4>Section progress</h4><label><input type="checkbox"> I can write if/[[ ]]/case confidently</label></div>
+
+</section>
+<section id="l1-loops" data-level="Level 1 · Beginner" data-keywords="for while until break continue mapfile">
+<h2>5. Loops</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="for i in 1 2 3; do printf '%s\\n' &quot;$i&quot;; done\nfor ((i=0; i<3; i++)); do printf '%s\\n' &quot;$i&quot;; done\n\n# Safe file loop (nullglob helps when nothing matches)\nshopt -s nullglob\nfor f in /etc/*.conf; do\n  printf 'conf: %s\\n' &quot;$f&quot;\ndone\n\n# Safe line loop\nwhile IFS= read -r line || [[ -n $line ]]; do\n  printf 'line: %s\\n' &quot;$line&quot;\ndone < /etc/hosts"></pre></div>
+<div class="callout warn"><strong>Warning</strong><p>Never <code>for f in $(ls)</code>. That breaks on spaces. Use globs or <code>find -print0</code> + <code>read -d ''</code>.</p></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Print numbers 1..5 with a C-style for.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="for ((i=1;i<=5;i++)); do echo &quot;$i&quot;; done"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Loop *.txt in the current dir safely with nullglob.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="shopt -s nullglob\\nfor f in *.txt; do echo &quot;$f&quot;; done"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Read lines from a file with IFS= read -r.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="while IFS= read -r line; do echo &quot;$line&quot;; done < file.txt"></pre></div></details></div></details>
+<div class="check" data-check="l1-loops"><h4>Section progress</h4><label><input type="checkbox"> I loop over files/lines without word-splitting traps</label></div>
+
+</section>
+<section id="l1-exit" data-level="Level 1 · Beginner" data-keywords="exit status $? return success failure">
+<h2>6. Exit codes</h2>
+
+<p>By convention: <strong>0</strong> success, non-zero failure. <code>$?</code> is the last command’s status.</p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="true; echo $?    # 0\nfalse; echo $?   # 1\ngrep -q root /etc/passwd && echo found || echo missing\n\nok() { return 0; }\nok; echo $?"></pre></div>
+<p>Level 1 mini-project: write <code>greet.sh</code> that requires one argument, prints a greeting, exits 2 on misuse.</p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="#!/usr/bin/env bash\nset -euo pipefail\n[[ $# -eq 1 ]] || { echo &quot;Usage: $0 NAME&quot; >&2; exit 2; }\nprintf 'Hello, %s\\n' &quot;$1&quot;"></pre></div>
+<div class="quiz" data-quiz="l1"><h4>Self-check</h4><div class="q">Which exit code should mean “usage error” in many CLI tools?</div><button type="button" data-ok="0">0</button><button type="button" data-ok="1">2 (common convention)</button><button type="button" data-ok="0">255 always</button><div class="feedback" aria-live="polite"></div></div>
+<div class="check" data-check="l1-exit"><h4>Section progress</h4><label><input type="checkbox"> I use exit codes intentionally</label></div>
+
+</section>
+<div class="level-banner" id="level2"><strong>Level 2 — Intermediate</strong><p style="margin:.35rem 0 0;color:var(--text)">Functions, redirection, strings, arrays, text tools, getopts, safe file IO.</p></div>
+<section id="l2-functions" data-level="Level 2 · Intermediate" data-keywords="functions local return source library">
+<h2>7. Functions</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="greet() {{\n  local name=${{1:-friend}}\n  printf 'Hi %s\\n' &quot;$name&quot;\n}}\ngreet Ada\nmsg=$(greet Bob)   # capture stdout\necho &quot;captured=$msg&quot;\n\n# source a library:  source ./lib.sh   or  . ./lib.sh"></pre></div>
+<div class="callout note"><strong>Note</strong><p><code>return</code> sets the function’s exit status; print data on stdout and capture with <code>$( )</code>.</p></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Write <code>add</code> that echoes sum of two ints.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="add(){ printf '%s\\n' &quot;$(( $1 + $2 ))&quot;; }"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Use local variables inside a function.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="f(){ local x=1; echo &quot;$x&quot;; }"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Create lib.sh with a function and source it.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="echo 'hi(){ echo hi; }' > lib.sh\\nsource ./lib.sh\\nhi"></pre></div></details></div></details>
+<div class="check" data-check="l2-functions"><h4>Section progress</h4><label><input type="checkbox"> I write functions with local and capture output</label></div>
+
+</section>
+<section id="l2-redir" data-level="Level 2 · Intermediate" data-keywords="redirect pipe tee here-doc process substitution">
+<h2>8. Redirection &amp; process substitution</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="echo hello > out.txt          # overwrite\necho more >> out.txt          # append\nls nofile 2> err.txt          # stderr\nls nofile &> both.txt         # stdout+stderr (bash)\ncmd 2>&1 | tee log.txt        # view + save\ncat <<'EOF'\nliteral here-doc\nEOF\n# process substitution (bash)\ndiff <(sort a.txt) <(sort b.txt)"></pre></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Append a timestamp to a log file.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="date -Iseconds >> app.log"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Send only stderr of a failing command to a file.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="ls /no/such 2> err.txt"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Write a here-doc to create a tiny config file.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="cat > cfg.txt <<'EOF'\\nmode=demo\\nEOF"></pre></div></details></div></details>
+<div class="check" data-check="l2-redir"><h4>Section progress</h4><label><input type="checkbox"> I can redirect, pipe, and use here-docs</label></div>
+
+</section>
+<section id="l2-strings" data-level="Level 2 · Intermediate" data-keywords="parameter expansion substring replace default">
+<h2>9. String handling</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="f=/var/log/app.log\necho &quot;${f##*/}&quot;          # app.log  (basename-like)\necho &quot;${f%/*}&quot;           # /var/log (dirname-like)\necho &quot;${f%.log}&quot;         # /var/log/app\nname=Ada\necho &quot;${name:-anonymous}&quot;\npath=${name:+&quot;/home/$name&quot;}\necho &quot;${#name}&quot;          # length\necho &quot;${name,,}&quot;         # ada (bash 4+)\necho &quot;${name^^}&quot;         # ADA"></pre></div>
+<span class="posix">Case conversion <code>${var,,}</code> needs Bash ≥4. On macOS Bash 3.2 use <code>tr</code> instead.</span>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Strip directory from a path with parameter expansion.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="f=/a/b/c.txt\\necho &quot;${f##*/}&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Provide default when var empty.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="echo &quot;${unsetvar:-fallback}&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Replace .txt with .bak in a filename variable.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="f=n.txt\\necho &quot;${f%.txt}.bak&quot;"></pre></div></details></div></details>
+<div class="check" data-check="l2-strings"><h4>Section progress</h4><label><input type="checkbox"> I use parameter expansions instead of calling basename always</label></div>
+
+</section>
+<section id="l2-arrays" data-level="Level 2 · Intermediate" data-keywords="indexed associative arrays bash">
+<h2>10. Arrays</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="arr=(apple banana &quot;kiwi fruit&quot;)\narr+=(&quot;mango&quot;)\nprintf '%s\\n' &quot;${arr[@]}&quot;\necho &quot;len=${#arr[@]}&quot;\necho &quot;first=${arr[0]}&quot;\n\ndeclare -A ages=([ada]=36 [linus]=55)\necho &quot;${ages[ada]}&quot;\nfor k in &quot;${!ages[@]}&quot;; do\n  printf '%s=%s\\n' &quot;$k&quot; &quot;${ages[$k]}&quot;\ndone"></pre></div>
+<span class="posix">Arrays are Bash (and ksh) features—not POSIX sh.</span>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Build an array of three words and print them.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="a=(one two three)\\nprintf '%s\\n' &quot;${a[@]}&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Append an element.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="a+=(four)"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Create an associative array with one key.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="declare -A m=([host]=localhost)\\necho &quot;${m[host]}&quot;"></pre></div></details></div></details>
+<div class="check" data-check="l2-arrays"><h4>Section progress</h4><label><input type="checkbox"> I can use indexed and associative arrays</label></div>
+
+</section>
+<section id="l2-text" data-level="Level 2 · Intermediate" data-keywords="grep sed awk cut sort uniq xargs find">
+<h2>11. Text toolkit in scripts</h2>
+
+<p>Prefer the right tool: grep find lines, cut/awk columns, sed stream edits, sort|uniq counts, xargs/find -exec batch files.</p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="grep -E 'error|fail' app.log | head\ncut -d: -f1 /etc/passwd | sort | uniq | wc -l\nprintf 'b\\na\\na\\n' | sort | uniq -c\nfind . -type f -name '*.log' -print0 | xargs -0 grep -l ERROR || true"></pre></div>
+<div class="callout tip"><strong>Tip</strong><p>When building pipelines in a script, fail early with <code>set -euo pipefail</code> and quote everything.</p></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Count unique users in /etc/passwd.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="cut -d: -f1 /etc/passwd | sort -u | wc -l"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Show lines with TODO in *.md using find+xargs safely.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="find . -name '*.md' -print0 | xargs -0 grep -n TODO || true"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Sort a file numerically by first column (awk).</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="awk '{print $1, $0}' file | sort -n | cut -d' ' -f2-"></pre></div></details></div></details>
+<div class="check" data-check="l2-text"><h4>Section progress</h4><label><input type="checkbox"> I pick grep/awk/sed/xargs appropriately</label></div>
+
+</section>
+<section id="l2-getopts" data-level="Level 2 · Intermediate" data-keywords="getopts long options usage validation">
+<h2>12. Argument parsing</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="#!/usr/bin/env bash\nset -euo pipefail\nusage(){ echo &quot;Usage: $0 [-n] [-f FILE] ARGS&quot; >&2; exit 2; }\ndry=0; file=&quot;&quot;\nwhile getopts ':nf:h' opt; do\n  case $opt in\n    n) dry=1 ;;\n    f) file=$OPTARG ;;\n    h|?) usage ;;\n  esac\ndone\nshift $((OPTIND-1))\n[[ -n $file ]] || usage\necho &quot;dry=$dry file=$file rest=$*&quot;"></pre></div>
+<p>For long options (<code>--verbose</code>), use a <code>while [[ $# -gt 0 ]]</code> + <code>case $1 in</code> loop.</p>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Add a -v verbose flag with getopts.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="See pattern above with v) verbose=1 ;;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Reject missing required -f FILE.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="[[ -n ${file:-} ]] || usage"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Write usage() that exits 2.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="usage(){ echo Usage >&2; exit 2; }"></pre></div></details></div></details>
+<div class="check" data-check="l2-getopts"><h4>Section progress</h4><label><input type="checkbox"> I can parse options with getopts</label></div>
+
+</section>
+<section id="l2-filesafe" data-level="Level 2 · Intermediate" data-keywords="IFS read mktemp cleanup spaces">
+<h2>13. Working with files safely</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="tmpdir=$(mktemp -d)\ntrap 'rm -rf -- &quot;$tmpdir&quot;' EXIT\nwhile IFS= read -r line || [[ -n $line ]]; do\n  printf 'got: %s\\n' &quot;$line&quot;\ndone < &quot;$1&quot;"></pre></div>
+<div class="bg"><div class="bad"><h4>Bad</h4><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="for f in $(ls *.txt); do rm $f; done"></pre></div><p>Breaks on spaces; parses ls.</p></div><div class="good"><h4>Good</h4><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="shopt -s nullglob\nfor f in *.txt; do rm -- &quot;$f&quot;; done"></pre></div><p>Glob + quoting; -- stops option parsing.</p></div></div>
+<p>Level 2 mini-project: script that copies only <code>*.log</code> from a src dir into a temp dir listing, then tars them.</p>
+<div class="quiz" data-quiz="l2"><h4>Self-check</h4><div class="q">Safest way to read a file line-by-line in bash?</div><button type="button" data-ok="0">for line in $(cat file)</button><button type="button" data-ok="1">while IFS= read -r line; do ...; done < file</button><button type="button" data-ok="0">lines=$(cat file); echo $lines</button><div class="feedback" aria-live="polite"></div></div>
+<div class="check" data-check="l2-filesafe"><h4>Section progress</h4><label><input type="checkbox"> I use mktemp, traps, and safe read loops</label></div>
+
+</section>
+<div class="level-banner" id="level3"><strong>Level 3 — Advanced</strong><p style="margin:.35rem 0 0;color:var(--text)">Robustness, traps, debugging, concurrency, remote, security, performance.</p></div>
+<section id="l3-robust" data-level="Level 3 · Advanced" data-keywords="set -euo pipefail IFS shellcheck quoting">
+<h2>14. Robust scripting</h2>
+<ul><li><code>set -e</code> — exit on failing command (with nuances in <code>if</code>/and-or lists).</li><li><code>set -u</code> — error on unset variables.</li><li><code>set -o pipefail</code> — pipeline fails if any stage fails.</li></ul><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="#!/usr/bin/env bash\nset -euo pipefail\nIFS=$'\\n\\t'\n# shellcheck disable=SC1091\n# source ./lib.sh"></pre></div><div class="callout warn"><strong>Warning</strong><p><code>set -e</code> is not magic—commands in <code>if cmd; then</code> are exempt. Still check critical commands explicitly.</p></div><div class="callout tip"><strong>Tip</strong><p>Install <code>shellcheck</code> and run it on every script: <code>shellcheck myscript.sh</code>.</p></div><details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Add set -euo pipefail to a script header.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="#!/usr/bin/env bash\nset -euo pipefail"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Show a command that would trip set -u.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="echo &quot;$DOES_NOT_EXIST&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Explain why shellcheck wants quoted dollar-at.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# preserves args with spaces when forwarding"></pre></div></details></div></details><div class="check" data-check="l3-robust"><h4>Section progress</h4><label><input type="checkbox"> I start scripts with set -euo pipefail and use shellcheck</label></div>
+</section>
+<section id="l3-trap" data-level="Level 3 · Advanced" data-keywords="trap EXIT ERR INT cleanup stderr">
+<h2>15. Error handling &amp; traps</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="tmpdir=$(mktemp -d)\ncleanup() { rm -rf -- &quot;$tmpdir&quot;; }\ntrap cleanup EXIT\ntrap 'log ERROR &quot;failed at line $LINENO&quot;' ERR\n\nlog() { printf '%s %s\\n' &quot;$1&quot; &quot;$2&quot; >&2; }\ndie() { log ERROR &quot;$1&quot;; exit 1; }"></pre></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Create a temp dir cleaned on EXIT.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="t=$(mktemp -d); trap 'rm -rf -- &quot;$t&quot;' EXIT"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Write die() that prints to stderr.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="die(){ echo &quot;$*&quot; >&2; exit 1; }"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Trap INT to print interrupted.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="trap 'echo interrupted >&2; exit 130' INT"></pre></div></details></div></details>
+<div class="check" data-check="l3-trap"><h4>Section progress</h4><label><input type="checkbox"> I use trap for cleanup and clear errors</label></div>
+
+</section>
+<section id="l3-debug" data-level="Level 3 · Advanced" data-keywords="set -x PS4 bash -n shellcheck logging">
+<h2>16. Debugging</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="bash -n script.sh          # syntax only\nbash -x script.sh          # trace\nPS4='+ ${BASH_SOURCE}:${LINENO}: '\nset -x\n# ... noisy region ...\nset +x\n\nlog() {\n  local level=$1; shift\n  printf '[%s] %s: %s\\n' &quot;$(date -Iseconds)&quot; &quot;$level&quot; &quot;$*&quot; >&2\n}"></pre></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Syntax-check a script without running it.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="bash -n script.sh"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Run with tracing.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="bash -x script.sh"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Add a log function with timestamp.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="See log() above"></pre></div></details></div></details>
+<div class="check" data-check="l3-debug"><h4>Section progress</h4><label><input type="checkbox"> I can bash -n / bash -x and log with levels</label></div>
+
+</section>
+<section id="l3-jobs" data-level="Level 3 · Advanced" data-keywords="background wait subshell xargs -P coproc">
+<h2>17. Process control</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="long_task() { sleep 1; echo done-&quot;$1&quot;; }\nlong_task a &\nlong_task b &\nwait\necho both finished\n\n# parallel (careful with load)\nprintf '%s\\n' 1 2 3 4 | xargs -P 2 -I{} bash -c 'echo work-{}; sleep 1' "></pre></div>
+<div class="callout note"><strong>Note</strong><p>Subshells <code>( ... )</code> isolate state; <code>{{ ...; }}</code> groups in the current shell.</p></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Start two sleeps in background and wait.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="sleep 1 & sleep 1 & wait"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Explain subshell vs brace group.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="( cd /tmp; pwd ); pwd   # cwd restored"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Run echo via xargs -P 2 on 4 inputs.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="printf '%s\\n' a b c d | xargs -P2 -n1 echo"></pre></div></details></div></details>
+<div class="check" data-check="l3-jobs"><h4>Section progress</h4><label><input type="checkbox"> I understand background jobs and wait</label></div>
+
+</section>
+<section id="l3-flock" data-level="Level 3 · Advanced" data-keywords="flock lockfile race conditions">
+<h2>18. Locking &amp; concurrency</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="lock=/tmp/myjob.lock\nexec 9>&quot;$lock&quot;\nif ! flock -n 9; then\n  echo &quot;already running&quot; >&2\n  exit 0\nfi\n# critical section\necho &quot;running $$&quot;\nsleep 2"></pre></div>
+<div class="callout tip"><strong>Tip</strong><p><code>flock</code> prevents overlapping cron runs of the same script.</p></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Wrap a script body with flock -n.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="See example above"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>What should happen on lock failure?</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="Exit 0 or 1 deliberately; log and leave"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Name one race without locking.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="Two backups writing the same archive name"></pre></div></details></div></details>
+<div class="check" data-check="l3-flock"><h4>Section progress</h4><label><input type="checkbox"> I can prevent duplicate runs with flock</label></div>
+
+</section>
+<section id="l3-services" data-level="Level 3 · Advanced" data-keywords="cron systemd PATH logging long-running">
+<h2>19. Signals, cron &amp; systemd</h2>
+
+<p>Cron has a minimal <code>PATH</code>. Use absolute paths. systemd services get their own environment—log with <code>journalctl -u name</code>.</p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# crontab example\n*/5 * * * * /home/you/bin/disk-monitor.sh >>/home/you/logs/disk.log 2>&1"></pre></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Why does cron fail to find your script?</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="PATH is minimal; use absolute paths"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Where do systemd service logs go?</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="journalctl -u myservice"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Handle SIGTERM for graceful stop.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="trap 'stop=1' TERM\\nwhile [[ -z ${stop:-} ]]; do work; done"></pre></div></details></div></details>
+<div class="check" data-check="l3-services"><h4>Section progress</h4><label><input type="checkbox"> I account for cron/systemd environment differences</label></div>
+
+</section>
+<section id="l3-ssh" data-level="Level 3 · Advanced" data-keywords="ssh scp rsync quoting remote">
+<h2>20. Remote systems</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="ssh -o BatchMode=yes host 'hostname; uptime'\nrsync -avP ./dir/ host:dir/\nssh host 'bash -s' <<'EOF'\nset -euo pipefail\nhostname\ndf -h /\nEOF"></pre></div>
+<div class="callout warn"><strong>Warning</strong><p>Quoting across SSH is hard. Prefer <code>bash -s</code> with a local here-doc over nested quote soup.</p></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Run hostname over ssh in BatchMode.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="ssh -o BatchMode=yes host hostname"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Copy a folder with rsync.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="rsync -avP ./d/ host:d/"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Run a remote bash -s here-doc.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="See example"></pre></div></details></div></details>
+<div class="check" data-check="l3-ssh"><h4>Section progress</h4><label><input type="checkbox"> I can automate SSH with keys and careful quoting</label></div>
+
+</section>
+<section id="l3-json" data-level="Level 3 · Advanced" data-keywords="jq curl csv json rest">
+<h2>21. Structured data &amp; APIs</h2>
+
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="curl -fsS https://httpbin.org/get | jq -r '.url'\n# check HTTP code\ncode=$(curl -s -o /tmp/body -w '%{{http_code}}' https://example.com)\n[[ $code == 200 ]] || { echo &quot;HTTP $code&quot; >&2; exit 1; }"></pre></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Extract a field with jq.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="jq -r .name file.json"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Fail if curl status is not 200.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="See code above"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>When is Python better than bash for CSV?</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="Complex joins, unicode edge cases, large transforms"></pre></div></details></div></details>
+<div class="check" data-check="l3-json"><h4>Section progress</h4><label><input type="checkbox"> I can call APIs with curl and parse JSON with jq</label></div>
+
+</section>
+<section id="l3-security" data-level="Level 3 · Advanced" data-keywords="injection eval secrets sudo quoting">
+<h2>22. Security</h2>
+
+<div class="bg"><div class="bad"><h4>Bad</h4><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="eval &quot;rm $file&quot;"></pre></div><p>Eval on untrusted input is code injection.</p></div><div class="good"><h4>Good</h4><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="rm -- &quot;$file&quot;"></pre></div><p>No eval; quote; use --.</p></div></div>
+<div class="callout warn"><strong>Warning</strong><p>Never put passwords on the command line (<code>ps</code> can see them) or commit secrets. Use env files with strict permissions or a secret manager.</p></div>
+<details class="ex"><summary>Try it yourself 1</summary><div class="body"><p>Rewrite an eval-based remover safely.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="rm -- &quot;$file&quot;"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 2</summary><div class="body"><p>Name two ways secrets leak from scripts.</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="argv via ps; world-readable files; logs"></pre></div></details></div></details>
+<details class="ex"><summary>Try it yourself 3</summary><div class="body"><p>Why sudo inside scripts is risky?</p>
+<details><summary>Show solution</summary><div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="Broad privilege; prefer rootless or explicit sudoers"></pre></div></details></div></details>
+<div class="check" data-check="l3-security"><h4>Section progress</h4><label><input type="checkbox"> I avoid eval and keep secrets out of argv/logs</label></div>
+
+</section>
+<section id="l3-perf" data-level="Level 3 · Advanced" data-keywords="subshell builtins external tools performance">
+<h2>23. Performance</h2>
+
+<p>Avoid <code>$( )</code> in hot loops when builtins suffice. One <code>awk</code> pass beats many greps. For heavy data, switch to Python/Go.</p>
+<div class="quiz" data-quiz="l3"><h4>Self-check</h4><div class="q">Best first step to harden a bash script?</div><button type="button" data-ok="0">Add eval for flexibility</button><button type="button" data-ok="1">set -euo pipefail, quote vars, run shellcheck</button><button type="button" data-ok="0">Disable all errors</button><div class="feedback" aria-live="polite"></div></div>
+<div class="check" data-check="l3-perf"><h4>Section progress</h4><label><input type="checkbox"> I know when bash is enough—and when to switch languages</label></div>
+
+</section>
+<div class="level-banner" id="level4"><strong>Level 4 — Real-world projects</strong><p style="margin:.35rem 0 0;color:var(--text)">Complete scripts live in <code>scripts/</code> on the repo. Study them, run in a temp dir, then modify.</p></div>
+<section id="p24" data-level="Level 4 · Projects" data-keywords="project 24-backup.sh">
+<h2>24. Backup with rotation</h2>
+
+<p>Archives a directory to dated <code>.tar.gz</code>, keeps N newest, logs actions.</p>
+<p>File: <a href="https://github.com/krishant624/bash-guide/blob/main/scripts/24-backup.sh"><code>scripts/24-backup.sh</code></a></p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# clone/download the repo, then:\\ncd scripts\\nchmod u+x 24-backup.sh\\n# read the header Usage comment, then run in a disposable directory"></pre></div>
+<div class="callout tip"><strong>Tip</strong><p>Read the script top-to-bottom once before running. Prefer dry-run flags when present.</p></div>
+<div class="check" data-check="p24"><h4>Section progress</h4><label><input type="checkbox"> I studied and tried 24-backup.sh</label></div>
+
+</section>
+<section id="p25" data-level="Level 4 · Projects" data-keywords="project 25-log-analyzer.sh">
+<h2>25. Log analyzer</h2>
+
+<p>Counts error/warn/info-like lines and prints top matches.</p>
+<p>File: <a href="https://github.com/krishant624/bash-guide/blob/main/scripts/25-log-analyzer.sh"><code>scripts/25-log-analyzer.sh</code></a></p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# clone/download the repo, then:\\ncd scripts\\nchmod u+x 25-log-analyzer.sh\\n# read the header Usage comment, then run in a disposable directory"></pre></div>
+<div class="callout tip"><strong>Tip</strong><p>Read the script top-to-bottom once before running. Prefer dry-run flags when present.</p></div>
+<div class="check" data-check="p25"><h4>Section progress</h4><label><input type="checkbox"> I studied and tried 25-log-analyzer.sh</label></div>
+
+</section>
+<section id="p26" data-level="Level 4 · Projects" data-keywords="project 26-disk-monitor.sh">
+<h2>26. Disk/health monitor</h2>
+
+<p>Alerts when df usage exceeds a threshold; exit 1 on alert.</p>
+<p>File: <a href="https://github.com/krishant624/bash-guide/blob/main/scripts/26-disk-monitor.sh"><code>scripts/26-disk-monitor.sh</code></a></p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# clone/download the repo, then:\\ncd scripts\\nchmod u+x 26-disk-monitor.sh\\n# read the header Usage comment, then run in a disposable directory"></pre></div>
+<div class="callout tip"><strong>Tip</strong><p>Read the script top-to-bottom once before running. Prefer dry-run flags when present.</p></div>
+<div class="check" data-check="p26"><h4>Section progress</h4><label><input type="checkbox"> I studied and tried 26-disk-monitor.sh</label></div>
+
+</section>
+<section id="p27" data-level="Level 4 · Projects" data-keywords="project 27-bulk-rename.sh">
+<h2>27. Bulk renamer (dry-run)</h2>
+
+<p>Lowercases <code>*.txt</code> names; default dry-run, <code>--apply</code> to rename.</p>
+<p>File: <a href="https://github.com/krishant624/bash-guide/blob/main/scripts/27-bulk-rename.sh"><code>scripts/27-bulk-rename.sh</code></a></p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# clone/download the repo, then:\\ncd scripts\\nchmod u+x 27-bulk-rename.sh\\n# read the header Usage comment, then run in a disposable directory"></pre></div>
+<div class="callout tip"><strong>Tip</strong><p>Read the script top-to-bottom once before running. Prefer dry-run flags when present.</p></div>
+<div class="check" data-check="p27"><h4>Section progress</h4><label><input type="checkbox"> I studied and tried 27-bulk-rename.sh</label></div>
+
+</section>
+<section id="p28" data-level="Level 4 · Projects" data-keywords="project 28-ssh-runner.sh">
+<h2>28. Multi-host SSH runner</h2>
+
+<p>Runs a command on each host in a file; summarizes ok/fail.</p>
+<p>File: <a href="https://github.com/krishant624/bash-guide/blob/main/scripts/28-ssh-runner.sh"><code>scripts/28-ssh-runner.sh</code></a></p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# clone/download the repo, then:\\ncd scripts\\nchmod u+x 28-ssh-runner.sh\\n# read the header Usage comment, then run in a disposable directory"></pre></div>
+<div class="callout tip"><strong>Tip</strong><p>Read the script top-to-bottom once before running. Prefer dry-run flags when present.</p></div>
+<div class="check" data-check="p28"><h4>Section progress</h4><label><input type="checkbox"> I studied and tried 28-ssh-runner.sh</label></div>
+
+</section>
+<section id="p29" data-level="Level 4 · Projects" data-keywords="project 29-iostat-csv.sh">
+<h2>29. iostat/df CSV sampler</h2>
+
+<p>Appends timestamped df (and iostat if present) rows for trending.</p>
+<p>File: <a href="https://github.com/krishant624/bash-guide/blob/main/scripts/29-iostat-csv.sh"><code>scripts/29-iostat-csv.sh</code></a></p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# clone/download the repo, then:\\ncd scripts\\nchmod u+x 29-iostat-csv.sh\\n# read the header Usage comment, then run in a disposable directory"></pre></div>
+<div class="callout tip"><strong>Tip</strong><p>Read the script top-to-bottom once before running. Prefer dry-run flags when present.</p></div>
+<div class="check" data-check="p29"><h4>Section progress</h4><label><input type="checkbox"> I studied and tried 29-iostat-csv.sh</label></div>
+
+</section>
+<section id="p30" data-level="Level 4 · Projects" data-keywords="project 30-template.sh">
+<h2>30. Reusable template</h2>
+
+<p>Header, getopts, logging, mktemp + EXIT trap, <code>main</code>.</p>
+<p>File: <a href="https://github.com/krishant624/bash-guide/blob/main/scripts/30-template.sh"><code>scripts/30-template.sh</code></a></p>
+<div class="prewrap"><button class="copy-btn" type="button">Copy</button><pre class="code" data-code="# clone/download the repo, then:\\ncd scripts\\nchmod u+x 30-template.sh\\n# read the header Usage comment, then run in a disposable directory"></pre></div>
+<div class="callout tip"><strong>Tip</strong><p>Read the script top-to-bottom once before running. Prefer dry-run flags when present.</p></div>
+<div class="check" data-check="p30"><h4>Section progress</h4><label><input type="checkbox"> I studied and tried 30-template.sh</label></div>
+
+</section>
+<div class="level-banner" id="reference"><strong>Reference</strong></div>
+<section id="pitfalls" data-level="Reference" data-keywords="pitfalls unquoted ls cat test">
+<h2>31. Common pitfalls</h2>
+
+<table>
+<thead><tr><th>Pitfall</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Unquoted <code>$var</code></td><td><code>"$var"</code> / <code>"$@"</code></td></tr>
+<tr><td>Parsing <code>ls</code></td><td>Globs / <code>find -print0</code></td></tr>
+<tr><td>Useless <code>cat file | cmd</code></td><td><code>cmd &lt; file</code> or <code>cmd file</code></td></tr>
+<tr><td><code>[ $a = x ]</code> breaks</td><td><code>[[ $a == x ]]</code></td></tr>
+<tr><td>Pipeline loop vars lost</td><td>Avoid pipe to while; use <code>&lt; file</code> or process sub carefully</td></tr>
+<tr><td><code>eval</code> on user data</td><td>Never; redesign</td></tr>
+</tbody></table>
+<div class="check" data-check="pitfalls"><h4>Section progress</h4><label><input type="checkbox"> I recognize the classic bash foot-guns</label></div>
+
+</section>
+<section id="style" data-level="Reference" data-keywords="style main shellcheck naming">
+<h2>32. Style &amp; best practices</h2>
+
+<ul>
+<li>Name scripts <code>verb-noun.sh</code>; functions <code>snake_case</code>.</li>
+<li>Put logic in functions; call <code>main "$@"</code> at the bottom.</li>
+<li>Comments explain <em>why</em>, not what the syntax already says.</li>
+<li>Prefer Bash extensions only when you declare <code>#!/usr/bin/env bash</code>.</li>
+<li>Run <code>shellcheck</code> in CI.</li>
+</ul>
+<div class="check" data-check="style"><h4>Section progress</h4><label><input type="checkbox"> I follow main() + shellcheck habits</label></div>
+
+</section>
+<section id="cheatsheet" data-level="Reference" data-keywords="cheat sheet syntax reference">
+<h2>33. Cheat sheet</h2>
+
+<table>
+<thead><tr><th>Topic</th><th>Syntax</th></tr></thead>
+<tbody>
+<tr><td>Shebang</td><td><code>#!/usr/bin/env bash</code></td></tr>
+<tr><td>Strict mode</td><td><code>set -euo pipefail</code></td></tr>
+<tr><td>Test</td><td><code>[[ -f $f ]]</code> <code>[[ $a == b ]]</code></td></tr>
+<tr><td>Defaults</td><td><code>${x:-default}</code> <code>${x:?err}</code></td></tr>
+<tr><td>Arrays</td><td><code>a=(..)</code> <code>"${a[@]}"</code></td></tr>
+<tr><td>Redirect</td><td><code>&gt;</code> <code>&gt;&gt;</code> <code>2&gt;</code> <code>|&amp;</code> <code>tee</code></td></tr>
+<tr><td>Special</td><td><code>$# $@ $? $0 $$ $!</code></td></tr>
+<tr><td>Trap</td><td><code>trap cleanup EXIT</code></td></tr>
+</tbody></table>
+<div class="check" data-check="cheatsheet"><h4>Section progress</h4><label><input type="checkbox"> I’ll keep this sheet open while writing scripts</label></div>
+
+</section>
+
+<footer>
+  <p>Source: <a href="https://github.com/krishant624/bash-guide">krishant624/bash-guide</a>. Example scripts in <code>scripts/</code>. Progress stored in localStorage when available.</p>
+</footer>
+</main>
+</div>
+</div>
+<script>
+(function(){
+  const root=document.documentElement,toc=document.getElementById('toc'),burger=document.getElementById('burger'),sidebar=document.getElementById('sidebar'),backdrop=document.getElementById('backdrop'),themeToggle=document.getElementById('themeToggle'),q=document.getElementById('q'),results=document.getElementById('searchResults'),progText=document.getElementById('progText'),progBar=document.getElementById('progBar');
+  const sections=[...document.querySelectorAll('main section[id]')];
+  function sys(){return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+  function theme(t){root.setAttribute('data-theme',t);themeToggle.textContent=t==='dark'?'Light':'Dark'}
+  try{theme(localStorage.getItem('bash-guide-theme')||sys())}catch(e){theme(sys())}
+  themeToggle.onclick=()=>{const n=root.getAttribute('data-theme')==='dark'?'light':'dark';try{localStorage.setItem('bash-guide-theme',n)}catch(e){}theme(n)};
+
+  let last='';
+  sections.forEach(sec=>{
+    const lvl=sec.dataset.level||'';
+    if(lvl&&lvl!==last){const g=document.createElement('li');g.className='level-label';g.style.cssText='list-style:none;margin:.7rem 0 .25rem;padding:.3rem .5rem;font-size:.66rem;text-transform:uppercase;letter-spacing:.12em;color:var(--side-m)';g.textContent=lvl;toc.appendChild(g);last=lvl}
+    const h=sec.querySelector('h2'); if(!h) return;
+    const li=document.createElement('li'); const a=document.createElement('a');
+    a.href='#'+sec.id; a.textContent=h.textContent.replace(/\s*Level.*$/,'').trim(); a.dataset.target=sec.id;
+    li.appendChild(a); toc.appendChild(li);
+  });
+  const links=[...toc.querySelectorAll('a')];
+  const spy=new IntersectionObserver(es=>{es.forEach(e=>{if(!e.isIntersecting)return;links.forEach(l=>l.classList.toggle('active',l.dataset.target===e.target.id))})},{rootMargin:'-20% 0px -65% 0px',threshold:0.01});
+  sections.forEach(s=>spy.observe(s));
+
+  function openNav(o){sidebar.classList.toggle('open',o);backdrop.classList.toggle('show',o);backdrop.hidden=!o;burger.setAttribute('aria-expanded',String(o))}
+  burger.onclick=()=>openNav(!sidebar.classList.contains('open'));
+  backdrop.onclick=()=>openNav(false);
+  toc.onclick=e=>{if(e.target.closest('a')) openNav(false)};
+
+  // lightweight bash highlight
+  function highlight(code){
+    const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    let t=esc(code);
+    t=t.replace(/(#.*)$/gm,'<span class="tok-cmt">$1</span>');
+    t=t.replace(/(\$\([^\)]*\)|\$\{[^}]*\}|\$[A-Za-z_?][A-Za-z0-9_]*|\$\d+|\$[@*#?\-$!])/g,'<span class="tok-var">$1</span>');
+    t=t.replace(/(&quot;|")((?:\\.|(?!\1).)*)(\1)/g,'<span class="tok-str">$1$2$3</span>');
+    t=t.replace(/(&#39;|')((?:\\.|(?!\1).)*)(\1)/g,'<span class="tok-str">$1$2$3</span>');
+    t=t.replace(/\b(if|then|else|elif|fi|for|while|until|do|done|case|esac|function|return|local|readonly|declare|typeset|export|unset|select|in|time|coproc|set|shift|trap|break|continue|exit)\b/g,'<span class="tok-kw">$1</span>');
+    return t;
+  }
+  document.querySelectorAll('pre.code[data-code]').forEach(pre=>{
+    const raw=pre.getAttribute('data-code').replace(/\\n/g,'\n').replace(/\\t/g,'\t');
+    pre.innerHTML=highlight(raw);
+    pre.dataset.copy=raw;
+  });
+
+  document.querySelectorAll('.prewrap').forEach(wrap=>{
+    const btn=wrap.querySelector('.copy-btn'); const pre=wrap.querySelector('pre.code');
+    if(!btn||!pre) return;
+    btn.onclick=async()=>{
+      const text=pre.dataset.copy||pre.textContent;
+      try{await navigator.clipboard.writeText(text);btn.textContent='Copied';setTimeout(()=>btn.textContent='Copy',1100)}
+      catch{btn.textContent='Failed';setTimeout(()=>btn.textContent='Copy',1100)}
+    };
+  });
+
+  function upd(){
+    const boxes=[...document.querySelectorAll('.check input[type=checkbox]')];
+    if(!boxes.length){progText.textContent='0%';progBar.style.width='0%';return}
+    const done=boxes.filter(b=>b.checked).length; const pct=Math.round(done/boxes.length*100);
+    progText.textContent=pct+'%'; progBar.style.width=pct+'%';
+  }
+  document.querySelectorAll('.check[data-check]').forEach(box=>{
+    const key='bash-guide-'+box.dataset.check; let saved={};
+    try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
+    box.querySelectorAll('input[type=checkbox]').forEach((input,i)=>{
+      input.checked=!!saved[i];
+      input.onchange=()=>{const st={};box.querySelectorAll('input[type=checkbox]').forEach((el,j)=>{st[j]=el.checked});try{localStorage.setItem(key,JSON.stringify(st))}catch(e){}upd()};
+    });
+  });
+  upd();
+
+  document.querySelectorAll('.quiz').forEach(quiz=>{
+    const key='bash-guide-quiz-'+quiz.dataset.quiz; const fb=quiz.querySelector('.feedback'); const buttons=[...quiz.querySelectorAll('button[data-ok]')];
+    let saved=null; try{saved=localStorage.getItem(key)}catch(e){}
+    if(saved!=null){buttons.forEach(b=>{b.disabled=true;if(b.dataset.ok==='1')b.classList.add('correct')});fb.textContent=saved==='1'?'Correct — saved.':'Review the section, then continue.'}
+    buttons.forEach(btn=>btn.onclick=()=>{
+      const ok=btn.dataset.ok==='1';
+      buttons.forEach(b=>{b.disabled=true;if(b.dataset.ok==='1')b.classList.add('correct')});
+      if(!ok) btn.classList.add('wrong');
+      fb.textContent=ok?'Correct.':'Not quite — re-read the Bad vs Good / example above.';
+      try{localStorage.setItem(key,ok?'1':'0')}catch(e){}
+    });
+  });
+
+  function search(query){
+    const qq=query.trim().toLowerCase(); results.innerHTML='';
+    if(!qq){results.classList.remove('show');return}
+    const hits=[];
+    sections.forEach(sec=>{
+      const title=sec.querySelector('h2')?.textContent||sec.id;
+      const hay=((sec.dataset.keywords||'')+' '+sec.textContent).toLowerCase();
+      if(hay.includes(qq)) hits.push({id:sec.id,title});
+    });
+    if(!hits.length) results.innerHTML='<div style="padding:.8rem;color:var(--muted);font-size:.8rem">No matches</div>';
+    else hits.slice(0,14).forEach(h=>{const a=document.createElement('a');a.href='#'+h.id;a.textContent=h.title;a.onclick=()=>{results.classList.remove('show');q.value='';openNav(false)};results.appendChild(a)});
+    results.classList.add('show');
+  }
+  q.oninput=()=>search(q.value);
+  q.onkeydown=e=>{if(e.key==='Escape'){results.classList.remove('show');q.blur()}};
+  document.onclick=e=>{if(!e.target.closest('.search')) results.classList.remove('show')};
+})();
+</script>
+</body>
+</html>
